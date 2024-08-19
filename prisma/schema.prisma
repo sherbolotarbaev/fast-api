@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id         Int           @id @default(autoincrement())
+  email      String        @unique
+  name       String        @db.VarChar(64)
+  surname    String        @db.VarChar(64)
+  photo      String?
+  isActive   Boolean       @default(true)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  isVerified Boolean       @default(false)
+  role       UserRole      @default(USER)
+  metaData   UserMetaData?
+
+  messages     GuestBookMessage[]
+  postLikes    LikePost[]
+  messageLikes LikeMessage[]
+}
+
+model UserMetaData {
+  userId   Int      @id
+  ip       String
+  city     String?
+  region   String?
+  country  String?
+  timezone String?
+  lastSeen DateTime
+  device   String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model GuestBookMessage {
+  id         Int      @id @default(autoincrement())
+  authorId   Int
+  message    String
+  isEdited   Boolean  @default(false)
+  likesCount Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  author User          @relation(fields: [authorId], references: [id])
+  likes  LikeMessage[]
+
+  @@index([createdAt, id])
+}
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime
+}
+
+model View {
+  slug       String @id
+  count      Int    @default(0)
+  likesCount Int    @default(0)
+
+  likes LikePost[]
+}
+
+model LikePost {
+  userId Int
+  slug   String
+
+  user User @relation(fields: [userId], references: [id])
+  view View @relation(fields: [slug], references: [slug])
+
+  @@id([userId, slug])
+}
+
+model LikeMessage {
+  userId    Int
+  messageId Int
+
+  user    User             @relation(fields: [userId], references: [id])
+  message GuestBookMessage @relation(fields: [messageId], references: [id])
+
+  @@id([userId, messageId])
+}
+
+model EmailOtp {
+  email     String   @id @unique
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
