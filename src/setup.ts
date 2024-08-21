@@ -2,30 +2,39 @@ import { ConfigService } from '@nestjs/config';
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { ZodValidationPipe } from './common/pipes/zod.pipe';
-import type { ConfigKeyPaths } from './config';
+import { appRegToken, securityRegToken, type ConfigKeyPaths } from './config';
 
 import fastifyCookie, { type FastifyCookieOptions } from '@fastify/cookie';
+import fastifyCors from '@fastify/cors';
+import fastifyCsrfProtection from '@fastify/csrf-protection';
+import fastifyHelmet from '@fastify/helmet';
 
-export function setup(app: NestFastifyApplication): NestFastifyApplication {
+export async function setup(
+  app: NestFastifyApplication,
+): Promise<NestFastifyApplication> {
   const configService = app.get(ConfigService<ConfigKeyPaths>);
-  const { cookieSecret } = configService.get('security', {
+  const { cookieSecret } = configService.get(securityRegToken, {
     infer: true,
   });
-  const { frontBaseUrl, frontAuthUrl } = configService.get('app', {
+  const { frontBaseUrl, frontAuthUrl } = configService.get(appRegToken, {
     infer: true,
   });
 
-  app.enableCors({
+  await app.register<FastifyCookieOptions>(fastifyCookie, {
+    secret: cookieSecret,
+  });
+
+  await app.register(fastifyHelmet);
+
+  await app.register(fastifyCsrfProtection, { cookieOpts: { signed: true } });
+
+  await app.register(fastifyCors, {
     origin: [frontBaseUrl, frontAuthUrl],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   });
 
   app.useGlobalPipes(new ZodValidationPipe());
-
-  app.register(fastifyCookie, {
-    secret: cookieSecret,
-  } as FastifyCookieOptions);
 
   return app;
 }

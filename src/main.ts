@@ -4,7 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 
 import { fastifyApp } from './common/adapters/fastify.adapter';
-import type { ConfigKeyPaths } from './config';
+import { appRegToken, type ConfigKeyPaths } from './config';
 
 import { AppModule } from './app.module';
 
@@ -17,11 +17,11 @@ async function bootstrap() {
   );
 
   const configService = app.get(ConfigService<ConfigKeyPaths>);
-  const { port, name } = configService.get('app', { infer: true });
+  const { port, name } = configService.get(appRegToken, { infer: true });
 
   const logger = new Logger(name);
 
-  setup(app);
+  await setup(app);
 
   try {
     await app.listen(port, '0.0.0.0');

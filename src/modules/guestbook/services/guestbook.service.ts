@@ -40,11 +40,11 @@ export class GuestbookService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  async onModuleInit(): Promise<void> {
+  public async onModuleInit(): Promise<void> {
     await this.cacheManager.del('messages');
   }
 
-  async getGuestbookMessages({
+  public async getGuestbookMessages({
     take,
   }: GetGuestbookMessagesDto): Promise<GetGuestbookMessagesResponseModel> {
     const cachedMessages: {

@@ -18,6 +18,9 @@ export enum ErrorEnum {
 
   MESSAGE_NOT_FOUND = 'No message found.',
 
+  TOKEN_INVALID = 'Invalid token.',
+  TOKEN_EXPIRED = 'Token expired.',
+
   VERIFICATION_CODE_SEND_FAILED = 'Failed to send verification code.',
   VERIFICATION_CODE_INVALID = 'Incorrect verification code.',
   VERIFICATION_CODE_EXPIRED = 'Verification code expired.',

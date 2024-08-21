@@ -6,8 +6,9 @@ import { AppController } from './app.controller';
 
 import config from './config';
 
-import { GuestbookModule } from './modules';
-import { DatabaseModule } from './shared/database/database.module';
+import { AuthModule, GuestbookModule } from './modules';
+import { DatabaseModule } from './shared/database';
+import { JwtModule } from './shared/jwt';
 import { RedisModule } from './shared/redis';
 
 const ConfigOptions: ConfigModuleOptions = {
@@ -20,11 +21,12 @@ const ConfigOptions: ConfigModuleOptions = {
 @Module({
   imports: [
     ConfigModule.forRoot(ConfigOptions),
-    RedisModule,
     DatabaseModule,
+    JwtModule,
+    RedisModule,
+    AuthModule,
     GuestbookModule,
   ],
   controllers: [AppController],
-  providers: [],
 })
 export class AppModule {}

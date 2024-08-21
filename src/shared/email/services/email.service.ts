@@ -37,7 +37,7 @@ export class EmailService {
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
-  async verifyEmail({ email }: VerifyEmailDto): Promise<boolean> {
+  public async verifyEmail({ email }: VerifyEmailDto): Promise<boolean> {
     try {
       const {
         data: { data },
@@ -58,7 +58,7 @@ export class EmailService {
     }
   }
 
-  async sendEmail({ email, subject, content, type }: SendEmailDto) {
+  public async sendEmail({ email, subject, content, type }: SendEmailDto) {
     if (type === 'text') {
       return this.mailerService.sendMail({
         to: email,
@@ -74,7 +74,7 @@ export class EmailService {
     }
   }
 
-  async checkVerificationCodeLimit(email: string): Promise<{
+  public async checkVerificationCodeLimit(email: string): Promise<{
     hasLimit: boolean;
     timeRemaining: number;
   }> {
@@ -104,7 +104,7 @@ export class EmailService {
     return { hasLimit: false, timeRemaining };
   }
 
-  async sendVerificationCode({
+  public async sendVerificationCode({
     email,
     code,
   }: SendVerificationCodeDto): Promise<{

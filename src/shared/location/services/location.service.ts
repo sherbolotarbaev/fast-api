@@ -19,7 +19,7 @@ export class LocationService {
     this.iPinfo = new IPinfoWrapper(this.securityConfig.ipInfoApiKey);
   }
 
-  async getLocation({ ip }: GetLocationDto): Promise<IPinfo> {
+  public async getLocation({ ip }: GetLocationDto): Promise<IPinfo> {
     try {
       const data = await this.iPinfo.lookupIp(ip);
       return data;

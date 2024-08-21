@@ -8,28 +8,44 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import type { MailerAsyncOptions } from '@nestjs-modules/mailer/dist/interfaces/mailer-async-options.interface';
 import { HttpModule } from '@nestjs/axios';
 
-// import type { ConfigKeyPaths } from '~/config';
-import type { ConfigKeyPaths, IAppConfig, IMailerConfig } from '../../config'; // fix: vercel issue
+// import {
+//   appRegToken,
+//   mailerRegToken,
+//   type ConfigKeyPaths,
+//   type IAppConfig,
+//   type IMailerConfig,
+// } from '~/config';
+import {
+  appRegToken,
+  mailerRegToken,
+  type ConfigKeyPaths,
+  type IAppConfig,
+  type IMailerConfig,
+} from '../../config'; // fix: vercel issue
 
 import { EmailService } from './services';
 
 const MailerOptions: MailerAsyncOptions = {
-  useFactory: (configService: ConfigService<ConfigKeyPaths>) => ({
-    transport: configService.get<IMailerConfig>('mailer'),
-    defaults: {
-      from: {
-        name: configService.get<IAppConfig>('app').name,
-        address: configService.get<IMailerConfig>('mailer').auth.user,
+  useFactory: (configService: ConfigService<ConfigKeyPaths>) => {
+    const appConfig = configService.get<IAppConfig>(appRegToken);
+    const mailerConfig = configService.get<IMailerConfig>(mailerRegToken);
+    return {
+      transport: mailerConfig,
+      defaults: {
+        from: {
+          name: appConfig.name,
+          address: mailerConfig.auth.user,
+        },
       },
-    },
-    template: {
-      dir: join(__dirname, '..', '..', 'templates'),
-      adapter: new HandlebarsAdapter(),
-      options: {
-        strict: true,
+      template: {
+        dir: join(__dirname, '..', '..', 'templates'),
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
       },
-    },
-  }),
+    };
+  },
   inject: [ConfigService],
 };
 

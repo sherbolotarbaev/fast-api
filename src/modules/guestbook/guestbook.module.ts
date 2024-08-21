@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
-import { GuestbookService } from './services';
 import { GuestbookController } from './controllers';
+import { GuestbookService } from './services';
 
 @Module({
   providers: [GuestbookService],
