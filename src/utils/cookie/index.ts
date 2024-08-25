@@ -3,7 +3,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 
 import { COOKIE_CONFIG, DEFAULT_COOKIE_OPTIONS } from './constants';
 
-const extractDomain = (hostname: string): string => {
+export const extractDomain = (hostname: string): string => {
   if (hostname === '127.0.0.1') return hostname;
   const parts = hostname.split('.').slice(-2);
   return parts.join('.');

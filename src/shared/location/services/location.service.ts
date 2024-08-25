@@ -1,4 +1,9 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  NotImplementedException,
+} from '@nestjs/common';
 
 // import { type ISecurityConfig, SecurityConfig } from '~/config';
 import { type ISecurityConfig, SecurityConfig } from '../../../config'; // fix: vercel issue
@@ -25,7 +30,7 @@ export class LocationService {
       return data;
     } catch (error) {
       this.logger.error('Failed to get location:', error);
-      throw new Error(error.message);
+      throw new NotImplementedException(error.message);
     }
   }
 }

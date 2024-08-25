@@ -1,21 +1,29 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { ConfigType, registerAs } from '@nestjs/config';
 
 import { env } from '../global/env';
 
+const publicKey = readFileSync(
+  join(__dirname, '..', '..', 'keys/public.pem'),
+  'utf-8',
+);
+const privateKey = readFileSync(
+  join(__dirname, '..', '..', 'keys/private.pem'),
+  'utf-8',
+);
+
 export const jwtRegToken = 'jwt';
 
 export const JwtConfig = registerAs(jwtRegToken, () => ({
-  secret: env('JWT_SECRET'),
-  signOptions: {
-    expiresIn: env('JWT_EXPIRATION'),
-  },
   access: {
-    publicKey: env('JWT_ACCESS_TOKEN_PUBLIC_KEY'),
-    privateKey: env('JWT_ACCESS_TOKEN_PRIVATE_KEY'),
+    publicKey,
+    privateKey,
     expiresIn: env('JWT_ACCESS_TOKEN_EXPIRATION'),
   },
   refresh: {
-    secret: env('JWT_REFRESH_TOKEN_PRIVATE_KEY'),
+    secret: env('JWT_REFRESH_TOKEN_SECRET'),
     expiresIn: env('JWT_REFRESH_TOKEN_EXPIRATION'),
   },
   confirmation: {

@@ -3,6 +3,8 @@ export enum ErrorEnum {
   USER_EXISTS = 'User already exists.',
   USER_DEACTIVATED = 'User has been deactivated.',
 
+  INVALID_CREDENTIALS = 'Invalid credentials.',
+
   ACCESS_DENIED = 'Access denied. Admin permissions required.',
 
   LOGOUT_FAILED = 'Failed to log out. Try again later.',

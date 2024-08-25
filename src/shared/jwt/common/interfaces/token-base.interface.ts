@@ -1,7 +1,7 @@
 export interface ITokenBase {
-  iat: number;
-  exp: number;
-  iss: string;
-  aud: string;
-  sub: string;
+  readonly iat: number;
+  readonly exp: number;
+  readonly iss: string;
+  readonly aud: string;
+  readonly sub: string;
 }

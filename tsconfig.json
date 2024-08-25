@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
+    "module": "commonjs",
     "incremental": true,
     "target": "ES2022",
     "lib": ["ESNext"],
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "baseUrl": ".",
-    "rootDir": ".",
-    "module": "commonjs",
+    // "rootDir": ".",
+    "outDir": "./dist",
     "paths": {
       "~/*": ["src/*"]
     },
@@ -16,7 +17,6 @@
     "noFallthroughCasesInSwitch": false,
     "noImplicitAny": false,
     "declaration": true,
-    "outDir": "./dist",
     "removeComments": true,
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,

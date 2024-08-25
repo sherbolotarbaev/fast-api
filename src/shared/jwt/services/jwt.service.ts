@@ -21,6 +21,8 @@ import { isDev } from '../../../global/env';
 // import { ErrorEnum } from '~/constants/error.constant';
 import { ErrorEnum } from '../../../constants/error.constant'; // fix: vercel issue
 
+import { v4 } from 'uuid';
+
 import { TokenTypeEnum } from '../common/enums';
 import {
   IAccessPayload,
@@ -45,14 +47,14 @@ export class JwtService {
   ) {
     this.jwtConfig = this.configService.get<IJwtConfig>(jwtRegToken);
     this.domain = !isDev ? '.sherbolotarbaev.co' : 'localhost';
-    this.issuer = '399393939';
+    this.issuer = 'api.sherbolotarbaev.co';
   }
 
   private async generateTokenAsync(
     payload: IAccessPayload | IEmailPayload | IRefreshPayload,
     options: JwtSignOptions,
   ): Promise<string> {
-    return this.nestJwtService.signAsync(payload, options);
+    return this.nestJwtService.sign(payload, options);
   }
 
   private async verifyTokenAsync<T>(
@@ -74,20 +76,21 @@ export class JwtService {
       if (error instanceof JsonWebTokenError) {
         throw new BadRequestException(ErrorEnum.TOKEN_INVALID);
       }
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
   public async generateToken(
     user: IUser,
     tokenType: TokenTypeEnum,
+    domain?: string | null,
     tokenId?: string,
   ): Promise<string> {
     const jwtOptions: JwtSignOptions = {
       issuer: this.issuer,
       subject: user.email,
-      audience: this.domain,
-      algorithm: 'HS256',
+      audience: domain ?? this.domain,
+      algorithm: tokenType === TokenTypeEnum.ACCESS ? 'RS256' : 'HS256',
     };
 
     switch (tokenType) {
@@ -102,12 +105,11 @@ export class JwtService {
               ...jwtOptions,
               privateKey,
               expiresIn: accessTokenExpiration,
-              algorithm: 'RS256',
             },
           );
         } catch (error) {
-          this.logger.error(error);
-          throw new InternalServerErrorException(error);
+          this.logger.error('Failed to generate ACCESS token:', error);
+          throw new InternalServerErrorException(error.message);
         }
 
       case TokenTypeEnum.REFRESH:
@@ -116,7 +118,7 @@ export class JwtService {
 
         try {
           return await this.generateTokenAsync(
-            { id: user.id, tokenId: tokenId ?? '' },
+            { id: user.id, tokenId: tokenId ?? v4() },
             {
               ...jwtOptions,
               secret: refreshSecret,
@@ -124,8 +126,8 @@ export class JwtService {
             },
           );
         } catch (error) {
-          this.logger.error(error);
-          throw new InternalServerErrorException(error);
+          this.logger.error('Failed to generate REFRESH token:', error);
+          throw new InternalServerErrorException(error.message);
         }
 
       case TokenTypeEnum.CONFIRMATION:
@@ -142,18 +144,22 @@ export class JwtService {
             },
           );
         } catch (error) {
-          this.logger.error(error);
-          throw new InternalServerErrorException(error);
+          this.logger.error(`Failed to generate ${tokenType} token:`, error);
+          throw new InternalServerErrorException(error.message);
         }
     }
   }
 
   public async verifyToken<
     T extends IAccessToken | IRefreshToken | IEmailToken,
-  >(token: string, tokenType: TokenTypeEnum): Promise<T> {
+  >(
+    token: string,
+    tokenType: TokenTypeEnum,
+    domain?: string | null,
+  ): Promise<T> {
     const jwtOptions: JwtVerifyOptions = {
       issuer: this.issuer,
-      audience: new RegExp(this.domain),
+      audience: domain ?? this.domain,
     };
 
     switch (tokenType) {
@@ -165,14 +171,14 @@ export class JwtService {
           return this.throwBadRequest(
             this.verifyTokenAsync(token, {
               ...jwtOptions,
-              secret: publicKey,
+              publicKey,
               maxAge: accessTokenExpiration,
               algorithms: ['RS256'],
             }),
           );
         } catch (error) {
-          this.logger.error(error);
-          throw new InternalServerErrorException(error);
+          this.logger.error('Failed to validate ACCESS token:', error);
+          throw new InternalServerErrorException(error.message);
         }
 
       case TokenTypeEnum.REFRESH:
@@ -190,8 +196,8 @@ export class JwtService {
             }),
           );
         } catch (error) {
-          this.logger.error(error);
-          throw new InternalServerErrorException(error);
+          this.logger.error(`Failed to validate ${tokenType} token:`, error);
+          throw new InternalServerErrorException(error.message);
         }
     }
   }
@@ -199,10 +205,11 @@ export class JwtService {
   public async generateAuthTokens(
     user: IUser,
     tokenId?: string,
+    domain?: string,
   ): Promise<[string, string]> {
     return Promise.all([
-      this.generateToken(user, TokenTypeEnum.ACCESS, tokenId),
-      this.generateToken(user, TokenTypeEnum.REFRESH, tokenId),
+      this.generateToken(user, TokenTypeEnum.ACCESS, domain, tokenId),
+      this.generateToken(user, TokenTypeEnum.REFRESH, domain, tokenId),
     ]);
   }
 }

@@ -1,5 +1,5 @@
 export interface IHunterResponse {
-  data: {
+  readonly data: {
     readonly status: string;
     readonly result: string;
     readonly _deprecation_notice: string;

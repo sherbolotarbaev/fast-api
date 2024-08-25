@@ -1,7 +1,7 @@
 import type { IEmailPayload, ITokenBase } from '.';
 
 export interface IRefreshPayload extends IEmailPayload {
-  tokenId: string;
+  readonly tokenId: string;
 }
 
 export interface IRefreshToken extends IRefreshPayload, ITokenBase {}

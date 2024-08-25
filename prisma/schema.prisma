@@ -17,6 +17,7 @@ model User {
   email      String        @unique
   name       String        @db.VarChar(64)
   surname    String        @db.VarChar(64)
+  password   String        @db.VarChar(25)
   photo      String?
   isActive   Boolean       @default(true)
   createdAt  DateTime      @default(now())

@@ -8,11 +8,11 @@ enum ContentType {
 
 const SendEmailSchema = z.object({
   email: z
-    .string({ required_error: 'Email cannot be empty.' })
+    .string({ required_error: 'Email is required and cannot be empty.' })
     .email({ message: 'Invalid email.' }),
   content: z.string({
+    required_error: 'Content is required cannot be empty.',
     message: 'Content must be a string.',
-    required_error: 'Content cannot be empty.',
   }),
   subject: z
     .string({

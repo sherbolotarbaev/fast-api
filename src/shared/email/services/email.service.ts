@@ -54,7 +54,7 @@ export class EmailService {
       );
     } catch (error) {
       this.logger.error('Failed to verify email:', error);
-      throw new Error(error.message);
+      throw new NotImplementedException(error.message);
     }
   }
 

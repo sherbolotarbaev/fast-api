@@ -1,7 +1,7 @@
 import type { IncomingHttpHeaders } from 'http';
 import UAParser from 'ua-parser-js';
 
-import type { UserAgent } from './interfaces';
+import type { IUserAgent } from './interfaces';
 
 export function isBot(input: string): boolean {
   return /Googlebot|Mediapartners-Google|AdsBot-Google|googleweblight|Storebot-Google|Google-PageRenderer|Google-InspectionTool|Bingbot|BingPreview|Slurp|DuckDuckBot|baiduspider|yandex|sogou|LinkedInBot|bitlybot|tumblr|vkShare|quora link preview|facebookexternalhit|facebookcatalog|Twitterbot|applebot|redditbot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|ia_archiver/i.test(
@@ -9,7 +9,7 @@ export function isBot(input: string): boolean {
   );
 }
 
-export function userAgentFromString(input: string | undefined): UserAgent {
+export function userAgentFromString(input: string | undefined): IUserAgent {
   const parser = new UAParser(input);
   const parsedResult = parser.getResult();
 
@@ -28,6 +28,6 @@ export function userAgent({
   headers,
 }: {
   headers: IncomingHttpHeaders;
-}): UserAgent {
+}): IUserAgent {
   return userAgentFromString(headers['user-agent'] || undefined);
 }

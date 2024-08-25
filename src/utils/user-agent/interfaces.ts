@@ -1,25 +1,25 @@
-export interface UserAgent {
-  isBot: boolean;
-  ua: string;
-  browser: {
-    name?: string;
-    version?: string;
-    major?: string;
+export interface IUserAgent {
+  readonly isBot: boolean;
+  readonly ua: string;
+  readonly browser: {
+    readonly name?: string;
+    readonly version?: string;
+    readonly major?: string;
   };
-  device: {
-    model?: string;
-    type?: string;
-    vendor?: string;
+  readonly device: {
+    readonly model?: string;
+    readonly type?: string;
+    readonly vendor?: string;
   };
-  engine: {
-    name?: string;
-    version?: string;
+  readonly engine: {
+    readonly name?: string;
+    readonly version?: string;
   };
-  os: {
-    name?: string;
-    version?: string;
+  readonly os: {
+    readonly name?: string;
+    readonly version?: string;
   };
-  cpu: {
-    architecture?: string;
+  readonly cpu: {
+    readonly architecture?: string;
   };
 }

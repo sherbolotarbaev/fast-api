@@ -8,6 +8,9 @@ declare module 'fastify' {
   }
 
   interface FastifyRequest {
-    user?: IUser;
+    user?: number;
+    cookies: {
+      [key: string]: string | undefined;
+    };
   }
 }

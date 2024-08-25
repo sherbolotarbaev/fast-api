@@ -1,4 +1,4 @@
 export interface IVerificationCodeLimit {
-  expiry: number;
-  count: number;
+  readonly expiry: number;
+  readonly count: number;
 }

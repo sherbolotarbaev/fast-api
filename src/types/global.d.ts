@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client';
+import { UserRole } from '@prisma/client'
 
 declare global {
   interface IUser {
@@ -7,13 +7,14 @@ declare global {
     readonly email: string;
     readonly name: string;
     readonly surname: string;
+    public password: string;
     readonly photo?: string;
     readonly isActive: boolean;
     readonly isVerified: boolean;
     readonly createdAt: Date;
     readonly updatedAt: Date;
 
-    readonly metaData: UserMetaData;
+    public metaData: UserMetaData;
   }
 
   interface IUserMetaData {
