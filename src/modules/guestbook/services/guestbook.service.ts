@@ -37,7 +37,7 @@ export class GuestbookService {
 
   constructor(
     private readonly prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   public async onModuleInit(): Promise<void> {

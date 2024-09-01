@@ -8,6 +8,9 @@ export enum ErrorEnum {
   ACCESS_DENIED = 'Access denied. Admin permissions required.',
 
   LOGOUT_FAILED = 'Failed to log out. Try again later.',
+  SIGN_UP_FAILED = 'Failed to sign up. Try again later.',
+  EMAIL_VERIFICATION_FAILED = 'Failed to verify email.',
+  GET_LOCATION_FAILED = 'Failed to get location.',
 
   INVALID_EMAIL = 'Please enter a valid email.',
 
@@ -26,4 +29,6 @@ export enum ErrorEnum {
   VERIFICATION_CODE_SEND_FAILED = 'Failed to send verification code.',
   VERIFICATION_CODE_INVALID = 'Incorrect verification code.',
   VERIFICATION_CODE_EXPIRED = 'Verification code expired.',
+
+  CONFIRMATION_EMAIL_SEND_FAILED = 'Failed to send confirmation email.',
 }

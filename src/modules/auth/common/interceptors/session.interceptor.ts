@@ -25,6 +25,7 @@ export class SessionInterceptor implements NestInterceptor {
         setCookie(request, response, 'session_refresh', refreshToken);
 
         delete user.password;
+        delete user.role;
         delete user.isVerified;
         delete user.isActive;
         delete user.metaData;

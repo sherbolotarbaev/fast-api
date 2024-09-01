@@ -7,6 +7,8 @@ import {
 
 // import { type ISecurityConfig, SecurityConfig } from '~/config';
 import { type ISecurityConfig, SecurityConfig } from '../../../config'; // fix: vercel issue
+// import { ErrorEnum } from '~/constants/error.constant';
+import { ErrorEnum } from '../../../constants/error.constant'; // fix: vercel issue
 
 import IPinfoWrapper, { IPinfo } from 'node-ipinfo';
 
@@ -30,7 +32,7 @@ export class LocationService {
       return data;
     } catch (error) {
       this.logger.error('Failed to get location:', error);
-      throw new NotImplementedException(error.message);
+      throw new NotImplementedException(ErrorEnum.GET_LOCATION_FAILED);
     }
   }
 }

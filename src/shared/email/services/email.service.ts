@@ -1,4 +1,4 @@
-import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
+import { type Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import {
   Inject,
   Injectable,
@@ -12,9 +12,18 @@ import { firstValueFrom } from 'rxjs';
 
 // import { TooManyRequestsException } from '~/common/exceptions/too-many-requests.exception';
 import { TooManyRequestsException } from '../../../common/exceptions/too-many-requests.exception'; // fix: vercel issue
-
-// import { type ISecurityConfig, SecurityConfig } from '~/config';
-import { type ISecurityConfig, SecurityConfig } from '../../../config'; // fix: vercel issue
+// import {
+//   AppConfig,
+//   type IAppConfig,
+//   type ISecurityConfig,
+//   SecurityConfig,
+// } from '~/config';
+import {
+  AppConfig,
+  type IAppConfig,
+  type ISecurityConfig,
+  SecurityConfig,
+} from '../../../config'; // fix: vercel issue
 import type {
   IHunterResponse,
   IVerificationCodeLimit,
@@ -23,19 +32,32 @@ import type {
 // import { ErrorEnum } from '~/constants/error.constant';
 import moment from 'moment';
 import { ErrorEnum } from '../../../constants/error.constant'; // fix: vercel issue
-import { SendEmailDto, SendVerificationCodeDto, VerifyEmailDto } from '../dto';
+
+import {
+  SendConfirmationEmailDto,
+  SendEmailDto,
+  SendVerificationCodeDto,
+  VerifyEmailDto,
+} from '../dto';
 
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
 
+  private readonly baseUrl: string;
+  private readonly hunterApiKey: string;
+
   constructor(
     @Inject(SecurityConfig.KEY)
     private readonly securityConfig: ISecurityConfig,
+    @Inject(AppConfig.KEY) private readonly appConfig: IAppConfig,
     private readonly httpService: HttpService,
     private readonly mailerService: MailerService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-  ) {}
+  ) {
+    this.baseUrl = this.appConfig.baseUrl;
+    this.hunterApiKey = this.securityConfig.hunterApiKey;
+  }
 
   public async verifyEmail({ email }: VerifyEmailDto): Promise<boolean> {
     try {
@@ -43,7 +65,7 @@ export class EmailService {
         data: { data },
       } = await firstValueFrom(
         this.httpService.get<IHunterResponse>(
-          `https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${this.securityConfig.hunterApiKey}`,
+          `https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${this.hunterApiKey}`,
         ),
       );
 
@@ -54,11 +76,12 @@ export class EmailService {
       );
     } catch (error) {
       this.logger.error('Failed to verify email:', error);
-      throw new NotImplementedException(error.message);
+      throw new NotImplementedException(ErrorEnum.EMAIL_VERIFICATION_FAILED);
     }
   }
 
   public async sendEmail({ email, subject, content, type }: SendEmailDto) {
+    this.logger.log(`Sending email to ${email}...`);
     if (type === 'text') {
       return this.mailerService.sendMail({
         to: email,
@@ -129,6 +152,7 @@ export class EmailService {
     }
 
     try {
+      this.logger.log(`Sending verification email to ${email}...`);
       await this.mailerService.sendMail({
         to: email,
         subject,
@@ -148,5 +172,33 @@ export class EmailService {
       email,
       code,
     };
+  }
+
+  public async sendConfirmationEmail({
+    name,
+    email,
+    confirmationToken,
+  }: SendConfirmationEmailDto) {
+    const subject = 'Confirm your email';
+    const template = './confirmation-email.hbs';
+    const link = `${this.baseUrl}/confirm/${confirmationToken}`;
+
+    try {
+      this.logger.log(`Sending confirmation email to ${email}...`);
+      await this.mailerService.sendMail({
+        to: email,
+        subject,
+        template,
+        context: {
+          name,
+          link,
+        },
+      });
+    } catch (error) {
+      this.logger.error('Failed to send confirmation email:', error);
+      throw new NotImplementedException(
+        ErrorEnum.CONFIRMATION_EMAIL_SEND_FAILED,
+      );
+    }
   }
 }

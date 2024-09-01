@@ -6,6 +6,7 @@ const SignInSchema = z.object(
     email: z
       .string({ required_error: 'Email is required and cannot be empty.' })
       .email({ message: 'Invalid email.' }),
+
     password: z
       .password({
         required_error: 'Password is required and cannot be empty.',

@@ -24,13 +24,13 @@ export class UserService {
     },
   };
 
-  async findAll(): Promise<IUser[] | null> {
+  public async findAll(): Promise<IUser[] | null> {
     return this.prisma.user.findMany({
       include: this.UserInclude,
     });
   }
 
-  async findById(id: number): Promise<IUser | null> {
+  public async findById(id: number): Promise<IUser | null> {
     return this.prisma.user.findFirst({
       where: {
         id,
@@ -39,16 +39,16 @@ export class UserService {
     });
   }
 
-  async findByEmail(email: string): Promise<IUser | null> {
+  public async findByEmail(email: string): Promise<IUser | null> {
     return this.prisma.user.findUnique({
       where: {
-        email: email.toLowerCase().trim(),
+        email: this.formatEmail(email),
       },
       include: this.UserInclude,
     });
   }
 
-  async createUser({
+  public async createUser({
     name,
     surname,
     email,
@@ -57,7 +57,7 @@ export class UserService {
   }: CreateUserDto): Promise<IUser> {
     return this.prisma.user.create({
       data: {
-        email,
+        email: this.formatEmail(email),
         name,
         surname,
         password,
@@ -67,22 +67,34 @@ export class UserService {
     });
   }
 
-  async updateUser(userId: number, data: UpdateUserDto): Promise<IUser> {
+  public async updateUser(
+    userId: number,
+    { name, surname, email, photo }: UpdateUserDto,
+  ): Promise<IUser> {
     return this.prisma.user.update({
       where: {
         id: userId,
       },
-      data,
+      data: {
+        name,
+        surname,
+        email: this.formatEmail(email),
+        photo,
+      },
       include: this.UserInclude,
     });
   }
 
-  async deleteUser(userId: number): Promise<IUser> {
+  public async deleteUser(userId: number): Promise<IUser> {
     return this.prisma.user.delete({
       where: {
         id: userId,
       },
       include: this.UserInclude,
     });
+  }
+
+  private formatEmail(email: string): string {
+    return email.toLowerCase().trim();
   }
 }

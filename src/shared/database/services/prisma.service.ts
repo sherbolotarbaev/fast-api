@@ -4,11 +4,7 @@ import {
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
-
 import { ConfigService } from '@nestjs/config';
-
-// import { ConfigKeyPaths } from '~/config';
-import { ConfigKeyPaths } from '../../../config'; // fix: vercel issue
 
 import { PrismaClient } from '@prisma/client';
 
@@ -19,7 +15,7 @@ export class PrismaService
 {
   private readonly logger = new Logger(PrismaService.name);
 
-  constructor(readonly configService: ConfigService<ConfigKeyPaths>) {
+  constructor(readonly configService: ConfigService) {
     const databaseUrl = configService.get<string>('DATABASE_URL');
     super({
       datasources: {
