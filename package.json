@@ -1,7 +1,7 @@
 {
   "name": "api",
   "version": "0.0.2",
-  "description": "Personal API built with Nest JS, Fastify, Prisma, PostgreSQL and Supabase.",
+  "description": "Personal API built with Nest JS, Fastify, Prisma, Redis, PostgreSQL and Supabase.",
   "author": "Sherbolot Arbaev",
   "private": true,
   "license": "UNLICENSED",
